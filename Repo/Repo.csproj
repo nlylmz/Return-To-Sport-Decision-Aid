@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210625101412_patient.cs" />
+    <Compile Remove="Migrations\20210625101412_patient.Designer.cs" />
+    <Compile Remove="Migrations\20210625101636_patients.cs" />
+    <Compile Remove="Migrations\20210625101636_patients.Designer.cs" />
+    <Compile Remove="Migrations\20210625101910_athlete.cs" />
+    <Compile Remove="Migrations\20210625101910_athlete.Designer.cs" />
+    <Compile Remove="Migrations\20210625102032_athletes.cs" />
+    <Compile Remove="Migrations\20210625102032_athletes.Designer.cs" />
+    <Compile Remove="Migrations\20210625102334_ath.cs" />
+    <Compile Remove="Migrations\20210625102334_ath.Designer.cs" />
+    <Compile Remove="Migrations\20210625102509_at.cs" />
+    <Compile Remove="Migrations\20210625102509_at.Designer.cs" />
+    <Compile Remove="Migrations\20210630195309_criteriaValue.cs" />
+    <Compile Remove="Migrations\20210630195309_criteriaValue.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+  </ItemGroup>  
+
+</Project>
