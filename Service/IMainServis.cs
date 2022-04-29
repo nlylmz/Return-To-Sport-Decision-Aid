@@ -56,6 +56,7 @@ namespace ReturnToSport.Service
 
         #region OptionResult
         long AddOptionResult(OptionResult optionResult);
+        Task<IQueryable<OptionResult>> GetOptionResultAsync();
         #endregion
     }
 }

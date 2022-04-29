@@ -155,6 +155,11 @@ namespace ReturnToSport.Service
         {
             return _optionResult.Ekle(optionResult);
         }
+
+        public async Task<IQueryable<OptionResult>> GetOptionResultAsync()
+        {
+            return await _optionResult.TumunuOkunanGetirAsync();
+        }
         #endregion
     }
 }

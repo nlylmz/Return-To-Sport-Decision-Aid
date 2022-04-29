@@ -57,10 +57,10 @@ namespace API.Controllers
             //Daha önce doktor değerlendirmesi yapılan Idleri listeden çıkart.
 
             List<Patient> allAthletes = await _mainServis.GetAllPatientsAsync().Result.ToListAsync();
-            var athleteIdleri = _mainServis.GetAllOptionsEvaluationAsync().Result.Select(s => new { s.AthleteId }).Distinct();
-            var result = allAthletes.Where(p => !athleteIdleri.Any(p2 => p2.AthleteId == p.Id));
+            //var athleteIdleri = _mainServis.GetAllOptionsEvaluationAsync().Result.Select(s => new { s.AthleteId }).Distinct();
+            //var result = allAthletes.Where(p => !athleteIdleri.Any(p2 => p2.AthleteId == p.Id));
 
-            List<AthletesDTO> athletes = result
+            List<AthletesDTO> athletes = allAthletes
                 .Select(s => new AthletesDTO
                 {
                     AthleteInfo = s.FirstName + " " + s.LastName + "(" + s.Detail + ")",
@@ -68,7 +68,7 @@ namespace API.Controllers
                 }).ToList();
             try
             {
-                return Ok(new { success = true, athletes = athletes});
+                return Ok(new { success = true, athletes = athletes });
             }
             catch (Exception ex)
             {
@@ -313,10 +313,10 @@ namespace API.Controllers
                     doctorOptionsEvaluationDTO.Id = newOptionsEvaluation.Id;
                 }
 
-               var criteria = await _mainServis.GetAllCriteriaAsync().Result.ToListAsync();
+                var criteria = await _mainServis.GetAllCriteriaAsync().Result.ToListAsync();
                 var athCrt = await _mainServis.GetAthleteCriteriaAsync(doctorOptionsEvaluationDTO.AthleteId).Result.ToListAsync();
 
-                var athelete = await _mainServis.GetPatientAsync(doctorOptionsEvaluationDTO.AthleteId); 
+                var athelete = await _mainServis.GetPatientAsync(doctorOptionsEvaluationDTO.AthleteId);
 
                 List<CriteriaWeightDTO> crtWeight = athCrt
                      .Select(s => new CriteriaWeightDTO
@@ -333,19 +333,18 @@ namespace API.Controllers
 
                 List<double> optcrtWeights = optionsWeight.Cast<double>().ToList();
 
-              /*  for (int i = 0; i < optResult.Length; i++)
-                {
-                    OptionResult newOptionResult = new OptionResult
-                    {
-                        AthleteId = doctorOptionsEvaluationDTO.AthleteId,
-                        OptionId = i+1,
-                        Weight = optResult[i],
-                    };
+                  for (int i = 0; i < optResult.Length; i++)
+                  {
+                      OptionResult newOptionResult = new OptionResult
+                      {
+                          AthleteId = doctorOptionsEvaluationDTO.AthleteId,
+                          OptionId = i+1,
+                          Weight = optResult[i],
+                      };
 
-                    _mainServis.AddOptionResult(newOptionResult);
-                    await _mainServis.DegisiklikleriKaydetAsync();
-
-                }*/
+                      _mainServis.AddOptionResult(newOptionResult);
+                      await _mainServis.DegisiklikleriKaydetAsync();
+                  }
 
                 /*List<List<double>> optcrtWeights = new List<List<double>>();
                 
@@ -368,9 +367,42 @@ namespace API.Controllers
                 catch (Exception ex)
                 {
                     return Ok(new { success = false, message = "Error!" });
-                }   
+                }
             }
         }
+
+        //Get: api/rtp/DashboardResult
+        [HttpGet("DashboardResult/{athleteId:long}")]
+        public async Task<IActionResult> GetDashboardResult(long athleteId)
+        {
+            //double[] optResult = new double[3];
+            var criteria = await _mainServis.GetAllCriteriaAsync().Result.ToListAsync();
+            var athCrt = await _mainServis.GetAthleteCriteriaAsync(athleteId).Result.ToListAsync();
+
+            var athelete = await _mainServis.GetPatientAsync(athleteId);
+
+            List<CriteriaWeightDTO> crtWeight = athCrt
+                 .Select(s => new CriteriaWeightDTO
+                 {
+                     CriteriaName = criteria.Where(c => c.Id == s.CriteriaId).Select(c => c.Name).FirstOrDefault(),
+                     Weight = s.Weight,
+
+                 }).ToList();
+
+            var orderedCrtWeight = crtWeight.OrderByDescending(x => x.Weight).ToList();
+
+            var optResult = _mainServis.GetOptionResultAsync().Result.ToList().Where(x => x.AthleteId == athleteId).Select(o => o.Weight);
+
+            try
+            {
+                return Ok(new { success = true, orderedCrtWeight, optResult, athelete });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = "Error!" });
+            }
+        }
+
 
         private async Task<double[,]> OptionsWeightCalculationAsync(List<OptionValuesDTO> optionValue, long athleteId)
         {
